@@ -13,7 +13,8 @@ def search_movies(about=None, title=None):
     Returns:
         list: A list of movies that match the given criteria.
     """
-
+    # This function simulates a movie search. It returns hardcoded movie data
+    # based on whether the 'title' or 'about' parameter is provided.
     if title:
         return str([{
             "title": "The Best Years of Our Lives",
@@ -60,7 +61,9 @@ movie_search_schema = {
         }
     }
 }
-
+# The 'movie_search_schema' defines a tool schema for the LLM. It describes
+# the 'search_movies' function, including its parameters and their types.
+# This schema is used by the LLM to understand how to call the function.
 
 def movie_search(user_message):
     print("User: ", user_message)
@@ -69,6 +72,8 @@ def movie_search(user_message):
         "role": "user",
         "content": user_message,
     }]
+    # The 'messages' list is initialized with the user's message. This is
+    # the input to the LLM.
 
     model = "gpt-4o-mini"
     response = client.chat.completions.create(
@@ -76,9 +81,12 @@ def movie_search(user_message):
         messages=messages,
         max_tokens=200,
         temperature=0.7,
-        tools=[movie_search_schema],
+        tools=[movie_search_schema], 
         tool_choice="auto"
     )
+    # The LLM is called with the user's message. The 'tools' parameter
+    # includes the 'movie_search_schema', allowing the LLM to use the
+    # 'search_movies' function if needed.
 
     message = response.choices[0].message
 
@@ -90,20 +98,37 @@ def movie_search(user_message):
             function_name = tool_call.function.name
             function_args = json.loads(tool_call.function.arguments)
             print(f"Function: {function_name}({function_args})")
-            
+            # The 'function_name' and 'function_args' are extracted from the
+            # tool call. 'function_name' is the name of the function that the
+            # LLM has decided to call, and 'function_args' are the arguments
+            # for that function, parsed from JSON format.
+
             # Call the appropriate function
             if function_name == "search_movies":
                 function_response = search_movies(**function_args)
                 print("Function response: ", function_response)
+                # If the function name is "search_movies", the 'search_movies'
+                # function is called with the provided arguments. The response
+                # from this function call is stored in 'function_response'.
+
                 tool_messages.append({
                     "tool_call_id": tool_call.id,
                     "role": "tool",
                     "name": function_name,
                     "content": function_response
                 })
+                # The result of the function call is appended to 'tool_messages'.
+                # This dictionary includes the 'tool_call_id' to track which tool
+                # call this response corresponds to, the 'role' indicating this
+                # is a tool response, the 'name' of the function, and the 'content'
+                # which is the actual response from the function. This allows the
+                # LLM to incorporate the tool's output into its final response.
             else:
                 raise ValueError(f"Unknown function: {function_name}")
-        
+        # If the LLM decides to use a tool, it will include 'tool_calls' in
+        # its response. Each tool call is processed, and the corresponding
+        # function is executed. The results are appended to 'tool_messages'.
+
         # Get final response with tool outputs
         response = client.chat.completions.create(
             model=model,
@@ -111,10 +136,14 @@ def movie_search(user_message):
             max_tokens=200,
             temperature=0.7
         )
-        
+        # A second call to the LLM is made, now including the tool outputs
+        # in the 'messages'. This allows the LLM to generate a final response
+        # that incorporates the results of the tool calls.
+
     final_response = response.choices[0].message.content
 
     print("Assistant: ", final_response)
+    # The final response from the LLM is printed.
 
 if __name__ == "__main__":
     print("\n\n\n1 – expect it to call `search_movies(about='gun slinger')`\n===================================\n")
@@ -125,5 +154,8 @@ if __name__ == "__main__":
     movie_search("Tell me a joke about a chicken")
     print("\n\n\n4 – expect it to print out an error and tell you about it\n===================================\n")
     movie_search("Get a random movie unqualified by title or description")
+# The main block tests the 'movie_search' function with different inputs.
+# It demonstrates how the LLM decides whether to use the 'search_movies'
+# tool based on the user's message.
     
     
