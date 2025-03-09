@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup
 import os
-import re
-import dspy  # Assuming dspy is a module you have access to
 import sys
+import dspy
+from bs4 import BeautifulSoup
+import re
 
 def simplify_html(html):
     # Parse the HTML
@@ -34,16 +34,33 @@ def simplify_html(html):
 
     return simplified_html
 
+# Example usage
+html = """
+<html>
+<head>
+    <title>Example</title>
+</head>
+<body>
+    <div id="content" class="article">
+        <h1>Title</h1>
+        <p>This is some <strong>HTML</strong> text with an <img src="image.jpg" alt="Example Image">.</p>
+        <script>alert('Hello');</script>
+    </div>
+</body>
+</html>
+"""
+
 class SummarizeSignature(dspy.Signature):
     """Review storefront website and summarize it"""
     storefront = dspy.InputField(desc="Simplified HTML of storefront.")
+
     selling = dspy.OutputField(desc="What types of products are being sold?")
     principles = dspy.OutputField(desc="What principles do they uphold as important?")
     tone = dspy.OutputField(desc="What is their overall tone (e.g. playful, formal, adventurous, relaxing)?")
     themes = dspy.OutputField(desc="Do you see any themes (travel, productivity, exercise)?")
     praiseworthy = dspy.OutputField(desc="What do you find praiseworthy and timely? Is there any news that this store would be proud of?")
     observations = dspy.OutputField(desc="What else do you see that is noteworthy?")
-
+    
 class Summarize(dspy.Module):
     def __init__(self):
         super().__init__()
@@ -51,19 +68,23 @@ class Summarize(dspy.Module):
     
     def forward(self, storefront_html):
         resp = self.summarizer(storefront=simplify_html(storefront_html))
-        summary = '\n'.join([f"{k}: {resp[k]}" for k in resp.keys()])
+        summary='\n'.join([f"{k}: {resp[k]}" for k in resp.keys()])
         return summary
 
 class BrainstormSignature(dspy.Signature):
     """Toss out a few ideas for plugins. Then identify the best one in terms of impact to customer, match with their brand, and ease of implementation."""
     store_summary = dspy.InputField(desc="Information about how the storefront")
+    
     brainstorm_result = dspy.OutputField(desc="A list of ideas and then an explanation of which idea is best and why.")
 
+    
 class IdeateSignature(dspy.Signature):
-    """Take the best plugin idea, restate the name of the idea, and create an in-depth analysis of just that idea."""
+    """Take the best plugin idea, restate the name of the idea, and create an in-depth analysis of just that idea. Explain the idea in detail. How would it look? How would the store's users interact with it? How would is make money for the store? At a high level, how would it be implemented?"""
     store_summary = dspy.InputField(desc="Information about how the storefront")
     brainstorm_result = dspy.InputField(desc="A list of ideas and then an explanation of which idea is best and why.")
+
     idea_description = dspy.OutputField(desc="The details about an idea.")
+
 
 class Ideate(dspy.Module):
     def __init__(self):
@@ -73,13 +94,31 @@ class Ideate(dspy.Module):
     
     def forward(self, store_summary):
         brainstorm_result = self.brainstormer(store_summary=store_summary).brainstorm_result
+
         idea_description = self.ideator(store_summary=store_summary, brainstorm_result=brainstorm_result).idea_description
+
         return idea_description
 
+from textwrap import dedent 
 class GenerateEmailSignature(dspy.Signature):
-    """You are a copywriter for JivePlugins."""
+    """You are a copywriter for JivePlugins.
+    
+    Initially consider your rationale for writing the email. What is the strategy that will best attract a new customer?
+
+    Then write an email promoting our plugin idea.
+        - It should be in a style that matches the vibe of the website.
+        - If possible, give a genuine compliment that links back to something we found on the website.
+        - It should make use of our earlier discussion about strategy - selling them on the highlights and practicality of the plugin concept.
+        - It should include a description of the plugin idea:
+        - Help them understand what it will look like.
+        - Help them understand how the users will engage.
+        - Help them understand the bottom line for business.
+        - It should have a call to action to reach out to JivePlugins for further conversation.
+        - Address the "${store_name} Team" in the salutation
+        - The signature should be from "Albert Berryman" the "Director of Innovation" of JivePlugins Inc."""
     store_name = dspy.InputField()
     store_summary = dspy.InputField()
+    
     email_subject = dspy.OutputField()
     email_body = dspy.OutputField()
 
@@ -110,6 +149,7 @@ def list_storefronts(directory):
     files = os.listdir(directory)
     html_files = [f.replace('.html', '') for f in files if f.endswith('.html')]
     return html_files
+
 
 if __name__ == "__main__":
     # Set up the LM
