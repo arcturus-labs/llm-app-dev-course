@@ -118,7 +118,8 @@ class GenerateEmailSignature(dspy.Signature):
         - The signature should be from "Albert Berryman" the "Director of Innovation" of JivePlugins Inc."""
     store_name = dspy.InputField()
     store_summary = dspy.InputField()
-    
+    idea_description = dspy.InputField()
+
     email_subject = dspy.OutputField()
     email_body = dspy.OutputField()
 
@@ -127,8 +128,8 @@ class GenerateEmail(dspy.Module):
         super().__init__()
         self.email_generator = dspy.ChainOfThought(GenerateEmailSignature)
     
-    def forward(self, store_name, store_summary):
-        email = self.email_generator(store_name=store_name, store_summary=store_summary)
+    def forward(self, store_name, store_summary, idea_description):
+        email = self.email_generator(store_name=store_name, store_summary=store_summary, idea_description=idea_description)
         return {
             'subject': email.email_subject,
             'body': email.email_body,
@@ -141,7 +142,7 @@ class SummarizeIdeateEmail(dspy.Module):
     def forward(self, store_name, storefront_html):
         store_summary = Summarize()(storefront_html=storefront_html)
         idea = Ideate()(store_summary=store_summary)
-        email = GenerateEmail()(store_name=store_name, store_summary=store_summary)
+        email = GenerateEmail()(store_name=store_name, store_summary=store_summary, idea_description=idea)
         return email
 
 def list_storefronts(directory):
