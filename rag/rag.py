@@ -146,6 +146,7 @@ def movie_search(user_message):
     # The final response from the LLM is printed.
 
 if __name__ == "__main__":
+    
     print("\n\n\n1 – expect it to call `search_movies(about='gun slinger')`\n===================================\n")
     movie_search("Do you have any good gun slinger movies?")
     print("\n\n\n2 – expect it to call `search_movies(title='the best')`\n===================================\n")
