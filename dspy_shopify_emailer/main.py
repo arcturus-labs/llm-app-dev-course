@@ -94,9 +94,7 @@ class Ideate(dspy.Module):
     
     def forward(self, store_summary):
         brainstorm_result = self.brainstormer(store_summary=store_summary).brainstorm_result
-
         idea_description = self.ideator(store_summary=store_summary, brainstorm_result=brainstorm_result).idea_description
-
         return idea_description
 
 from textwrap import dedent 
