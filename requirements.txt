@@ -4,3 +4,5 @@ openai
 beautifulsoup4
 dspy
 opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation
