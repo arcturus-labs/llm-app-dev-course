@@ -1,0 +1,6 @@
+elasticsearch
+pandas
+openai
+beautifulsoup4
+dspy
+opentelemetry-api
