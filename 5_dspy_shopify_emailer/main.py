@@ -34,21 +34,6 @@ def simplify_html(html):
 
     return simplified_html
 
-# Example usage
-html = """
-<html>
-<head>
-    <title>Example</title>
-</head>
-<body>
-    <div id="content" class="article">
-        <h1>Title</h1>
-        <p>This is some <strong>HTML</strong> text with an <img src="image.jpg" alt="Example Image">.</p>
-        <script>alert('Hello');</script>
-    </div>
-</body>
-</html>
-"""
 
 class SummarizeSignature(dspy.Signature):
     """Review storefront website and summarize it"""
