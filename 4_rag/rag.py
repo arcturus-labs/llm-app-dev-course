@@ -1,3 +1,4 @@
+# python 4_rag/rag.py
 import openai
 import json
 client = openai.Client()
@@ -66,12 +67,26 @@ movie_search_schema = {
 # This schema is used by the LLM to understand how to call the function.
 
 def movie_search(user_message):
-    print("User: ", user_message)
+    # Define color variables
+    red = "\033[91m"
+    green = "\033[92m"
+    blue = "\033[94m"
+    light_blue = "\033[96m"
+    bold = "\033[1m"
+    clear_color = "\033[0m"
 
-    messages = [{
-        "role": "user",
-        "content": user_message,
-    }]
+    print(f"\n{bold}{red}User:{clear_color} {red}{user_message}{clear_color}")
+
+    messages = [
+        {
+            "role": "system",
+            "content": "You are a helpful assistant that can search for movies based on title or description. If you can't find the movie, just say so.",
+        },
+        {
+            "role": "user",
+            "content": user_message,
+        }
+    ]
     # The 'messages' list is initialized with the user's message. This is
     # the input to the LLM.
 
@@ -92,12 +107,15 @@ def movie_search(user_message):
 
     # Handle tool calls if present
     if message.tool_calls:
+        if message.content is not None:
+            print(f"\n{bold}{green}Assistant (in tool call):{clear_color} {green}{message.content}{clear_color}")
+            
         tool_messages = [message]
         
         for tool_call in message.tool_calls:
             function_name = tool_call.function.name
             function_args = json.loads(tool_call.function.arguments)
-            print(f"Function: {function_name}({function_args})")
+            print(f"\n{bold}{blue}Calling tool:{clear_color} {blue}{function_name}({function_args}){clear_color}")
             # The 'function_name' and 'function_args' are extracted from the
             # tool call. 'function_name' is the name of the function that the
             # LLM has decided to call, and 'function_args' are the arguments
@@ -106,7 +124,7 @@ def movie_search(user_message):
             # Call the appropriate function
             if function_name == "search_movies":
                 function_response = search_movies(**function_args)
-                print("Function response: ", function_response)
+                print(f"\n{bold}{light_blue}Tool response:{clear_color} {light_blue}{function_response}{clear_color}")
                 # If the function name is "search_movies", the 'search_movies'
                 # function is called with the provided arguments. The response
                 # from this function call is stored in 'function_response'.
@@ -141,8 +159,7 @@ def movie_search(user_message):
         # that incorporates the results of the tool calls.
 
     final_response = response.choices[0].message.content
-
-    print("Assistant: ", final_response)
+    print(f"\n{bold}{green}Assistant:{clear_color} {green}{final_response}{clear_color}")
     # The final response from the LLM is printed.
 
 if __name__ == "__main__":
