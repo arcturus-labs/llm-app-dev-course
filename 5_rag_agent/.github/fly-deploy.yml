@@ -1,0 +1,66 @@
+# See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
+
+name: Test and Deploy
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'scripts/**'
+      - 'fly.toml'
+      - '.github/workflows/**'
+
+jobs:
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Run frontend tests
+        run: ./scripts/run-frontend-tests.sh
+
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Run backend tests
+        run: ./scripts/run-backend-tests.sh
+
+  deploy:
+    name: Deploy app
+    needs: [frontend-tests, backend-tests]  # This ensures tests must pass before deployment
+    runs-on: ubuntu-latest
+    concurrency: deploy-group
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: |
+          flyctl secrets set ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          flyctl secrets set CONVERTKIT_API_KEY=${{ secrets.CONVERTKIT_API_KEY }}
+          flyctl secrets set CONVERTKIT_API_SECRET=${{ secrets.CONVERTKIT_API_SECRET }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy to fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
