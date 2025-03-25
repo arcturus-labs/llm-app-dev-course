@@ -1,3 +1,5 @@
+# cd 5_dspy_shopify_emailer
+# python main.py "Adored Vintage"
 import os
 import sys
 import dspy

@@ -3,7 +3,8 @@
 
 # Download and run elasticsearch in a docker container
 Export credentials (silly elasticsearch requirement) and run elasticsearch. _Must be sourced._
-`source start/start.sh`
+`cd 5_rag_agent`
+`source scripts/start.sh`
 
 # Index docs
 This deletes the existing index and reindexes it from products.csv. This is from the WANDS dataset: https://github.com/wayfair/WANDS
