@@ -1,3 +1,4 @@
+# python 6_observability/rag_w_observability.py
 import openai
 import json
 from opentelemetry import trace

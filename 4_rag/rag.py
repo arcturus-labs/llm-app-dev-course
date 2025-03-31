@@ -166,10 +166,13 @@ if __name__ == "__main__":
     
     print("\n\n\n1 – expect it to call `search_movies(about='gun slinger')`\n===================================\n")
     movie_search("Do you have any good gun slinger movies?")
+    
     print("\n\n\n2 – expect it to call `search_movies(title='the best')`\n===================================\n")
     movie_search("I'm looking for a movie that has \"the best\" in the title, but I can't remember the rest of the title.")
+    
     print("\n\n\n3 – expect it to not use any tools\n===================================\n")
     movie_search("Tell me a joke about a chicken")
+    
     print("\n\n\n4 – expect it to print out an error and tell you about it\n===================================\n")
     movie_search("Get a random movie unqualified by title or description")
 # The main block tests the 'movie_search' function with different inputs.
