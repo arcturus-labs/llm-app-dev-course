@@ -143,17 +143,18 @@ if __name__ == "__main__":
     def get_stock_price(ticker):
         """Mock function to get stock price for a given ticker symbol"""
         mock_prices = {
-            "AAPL": 150.00,
-            "GOOGL": 2800.00,
-            "MSFT": 300.00,
-            "AMZN": 3500.00,
-            "TSLA": 700.00
+            "AAPL": "150.00",
+            "GOOGL": "2800.00",
+            "MSFT": "300.00",
+            "AMZN": "3500.00",
+            "TSLA": "700.00"
         }
         return mock_prices.get(ticker, f"Price not found for {ticker}")
 
     def get_weather(location):
         """Mock function to get weather for a given location"""
         mock_weather = {
+            "New York City": "20°C, sunny",
             "New York": "20°C, sunny",
             "San Francisco": "15°C, cloudy",
             "Miami": "25°C, rainy",
@@ -175,8 +176,16 @@ if __name__ == "__main__":
         "get_clothing_recommendation": get_clothing_recommendation
     }
     # Create a conversation instance
-    conv = Conversation("gpt-4o", tools=TOOLS, tool_lookup=tool_lookup, system="You are a helpful assistant that can answer questions and help with tasks.")
+    conv = Conversation(
+        "gpt-4o", 
+        tools=TOOLS, 
+        tool_lookup=tool_lookup, 
+        system="You are a helpful assistant that can answer questions and help with tasks. You talk like a pirate.",
+    )
     
     # Ask about stock prices
-    response = conv.say("What should I wear in Miami today?")
-    response = conv.say("Is NY any better?")
+    while True:
+        # try:
+        # "What should I wear in Miami today?"
+        # "Is NY any better?"
+        response = conv.say(input("User: "))
