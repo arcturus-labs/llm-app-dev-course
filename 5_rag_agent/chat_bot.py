@@ -71,7 +71,8 @@ class Conversation:
                 })
                 
                 # Print the tool's response
-                print(f"\n{bold}{light_blue}Tool response:{clear_color} {light_blue}{result[:200]}{clear_color}")
+                print(f"\n{bold}{light_blue}Tool response:{clear_color} {light_blue}{result[:300]}\n...\n{result[-300:]}{clear_color}")
+                # print(f"\n{bold}{light_blue}Tool response:{clear_color} {light_blue}{result[:300]}{clear_color}")
             
             # Get a new response from the assistant with the tool results
             response = self.get_response(self.messages)

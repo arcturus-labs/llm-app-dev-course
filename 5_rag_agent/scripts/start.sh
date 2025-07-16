@@ -1,2 +1,2 @@
-export ES_LOCAL_API_KEY=alVFdFNwWUJ4Nkp0aXdkczYzTE46WHg0MkpsLVpZNC0zRDhqUjg0QWI5Zw==
+export ES_LOCAL_API_KEY=R0pKaFc1WUJYRERzNUY3UUtzMEc6czFla1dmNGRPa0x3QzVfb09nSV9uQQ==
 ./elastic-start-local/start.sh

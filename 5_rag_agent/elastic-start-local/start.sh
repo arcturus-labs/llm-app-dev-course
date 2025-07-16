@@ -18,7 +18,7 @@ if [ "$available_gb" -lt "$required" ]; then
   echo "Press ENTER to confirm."
   read -r
 fi
-if [ -z "${ES_LOCAL_LICENSE:-}" ] && [ "$today" -gt 1743913660 ]; then
+if [ -z "${ES_LOCAL_LICENSE:-}" ] && [ "$today" -gt 1747881794 ]; then
   echo "---------------------------------------------------------------------"
   echo "The one-month trial period has expired. You can continue using the"
   echo "Free and open Basic license or request to extend the trial for"

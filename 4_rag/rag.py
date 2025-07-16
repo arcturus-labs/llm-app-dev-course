@@ -90,7 +90,7 @@ def movie_search(user_message):
     # The 'messages' list is initialized with the user's message. This is
     # the input to the LLM.
 
-    model = "gpt-4o-mini"
+    model = "gpt-4.1-mini"
     response = client.chat.completions.create(
         model=model,
         messages=messages,
