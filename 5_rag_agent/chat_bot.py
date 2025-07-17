@@ -44,6 +44,37 @@ class Conversation:
             }
         )
         response = self.get_response(self.messages)
+        # {
+        #     "id": "chatcmpl-abc123",
+        #     "object": "chat.completion",
+        #     "created": 1677858242,
+        #     "model": "gpt-4o",
+        #     "choices": [
+        #         {
+        #             "index": 0,
+        #             "message": {
+        #                 "role": "assistant",
+        #                 "content": "Looking up the weather in San Francisco",
+        #                 "tool_calls": [
+        #                     {
+        #                         "id": "call_1",
+        #                         "type": "function",
+        #                         "function": {
+        #                             "name": "get_weather",
+        #                             "arguments": "{\"location\": \"San Francisco\"}"
+        #                         }
+        #                     }
+        #                 ]
+        #             },
+        #             "finish_reason": "tool_calls"
+        #         }
+        #     ],
+        #     "usage": {
+        #         "prompt_tokens": 25,
+        #         "completion_tokens": 10,
+        #         "total_tokens": 35
+        #     }
+        # }
         response_message = response.choices[0].message
         
         # Handle tool calls if present
@@ -90,23 +121,6 @@ if __name__ == "__main__":
         {
             "type": "function",
             "function": {
-                "name": "get_stock_price",
-                "description": "Get the current stock price for a given ticker symbol",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "ticker": {
-                            "type": "string",
-                            "description": "The stock ticker symbol (e.g., AAPL, GOOGL)"
-                        }
-                    },
-                    "required": ["ticker"]
-                }
-            }
-        },
-        {
-            "type": "function",
-            "function": {
                 "name": "get_weather",
                 "description": "Get the current weather for a given location",
                 "parameters": {
@@ -141,17 +155,6 @@ if __name__ == "__main__":
         }
     ]
 
-    def get_stock_price(ticker):
-        """Mock function to get stock price for a given ticker symbol"""
-        mock_prices = {
-            "AAPL": "150.00",
-            "GOOGL": "2800.00",
-            "MSFT": "300.00",
-            "AMZN": "3500.00",
-            "TSLA": "700.00"
-        }
-        return mock_prices.get(ticker, f"Price not found for {ticker}")
-
     def get_weather(location):
         """Mock function to get weather for a given location"""
         mock_weather = {
@@ -172,16 +175,15 @@ if __name__ == "__main__":
         return mock_recommendations.get(weather, f"No recommendation found for {weather}")
 
     tool_lookup = {
-        "get_stock_price": get_stock_price,
         "get_weather": get_weather,
         "get_clothing_recommendation": get_clothing_recommendation
     }
     # Create a conversation instance
     conv = Conversation(
-        "gpt-4o", 
+        "gpt-4.1", 
         tools=TOOLS, 
         tool_lookup=tool_lookup, 
-        system="You are a helpful assistant that can answer questions and help with tasks. You talk like a pirate.",
+        system="You are a helpful assistant.",
     )
     
     # Ask about stock prices

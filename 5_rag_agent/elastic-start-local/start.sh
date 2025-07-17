@@ -16,9 +16,10 @@ if [ "$available_gb" -lt "$required" ]; then
   echo "executed in read-only mode. Please free up disk space to resolve this issue."
   echo "----------------------------------------------------------------------------"
   echo "Press ENTER to confirm."
-  read -r
+  # shellcheck disable=SC2034
+  read -r line
 fi
-if [ -z "${ES_LOCAL_LICENSE:-}" ] && [ "$today" -gt 1747881794 ]; then
+if [ -z "${ES_LOCAL_LICENSE:-}" ] && [ "$today" -gt 1755299555 ]; then
   echo "---------------------------------------------------------------------"
   echo "The one-month trial period has expired. You can continue using the"
   echo "Free and open Basic license or request to extend the trial for"

@@ -103,6 +103,39 @@ def movie_search(user_message):
     # includes the 'movie_search_schema', allowing the LLM to use the
     # 'search_movies' function if needed.
 
+    # HERE IS THE RESPONSE FORMAT
+    # {
+    #     "id": "chatcmpl-abc123",
+    #     "object": "chat.completion",
+    #     "created": 1677858242,
+    #     "model": "gpt-4o",
+    #     "choices": [
+    #         {
+    #             "index": 0,
+    #             "message": {
+    #                 "role": "assistant",
+    #                 "content": "Looking up the weather in San Francisco",
+    #                 "tool_calls": [
+    #                     {
+    #                         "id": "call_1",
+    #                         "type": "function",
+    #                         "function": {
+    #                             "name": "get_weather",
+    #                             "arguments": "{\"location\": \"San Francisco\"}"
+    #                         }
+    #                     }
+    #                 ]
+    #             },
+    #             "finish_reason": "tool_calls"
+    #         }
+    #     ],
+    #     "usage": {
+    #         "prompt_tokens": 25,
+    #         "completion_tokens": 10,
+    #         "total_tokens": 35
+    #     }
+    # }
+
     message = response.choices[0].message
 
     # Handle tool calls if present

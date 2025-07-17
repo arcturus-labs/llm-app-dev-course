@@ -6,7 +6,7 @@ set -eu
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 ask_confirmation() {
-    echo "Do you want to continue? (yes/no)"
+    echo "Do you confirm? (yes/no)"
     read -r answer
     case "$answer" in
         yes|y|Y|Yes|YES)
@@ -36,6 +36,25 @@ echo "All data will be deleted and cannot be recovered."
 if ask_confirmation; then
   docker compose rm -fsv
   docker compose down -v
-  rm docker-compose.yml .env uninstall.sh start.sh stop.sh
+  rm docker-compose.yml .env uninstall.sh start.sh stop.sh config/telemetry.yml
+  if [ -z "$(ls -A config)" ]; then
+    rm -d config
+  fi
+  echo
+  echo "Do you want to remove the following Docker images?"
+  echo "- docker.elastic.co/elasticsearch/elasticsearch:9.0.3-arm64"
+  echo "- docker.elastic.co/kibana/kibana:9.0.3-arm64"
+  if ask_confirmation; then
+    if docker rmi "docker.elastic.co/elasticsearch/elasticsearch:9.0.3-arm64" >/dev/null 2>&1; then
+      echo "Image docker.elastic.co/elasticsearch/elasticsearch:9.0.3-arm64 removed successfully"
+    else
+      echo "Failed to remove image docker.elastic.co/elasticsearch/elasticsearch:9.0.3-arm64. It might be in use."
+    fi
+    if docker rmi docker.elastic.co/kibana/kibana:9.0.3-arm64 >/dev/null 2>&1; then
+      echo "Image docker.elastic.co/kibana/kibana:9.0.3-arm64 removed successfully"
+    else
+      echo "Failed to remove image docker.elastic.co/kibana/kibana:9.0.3-arm64. It might be in use."
+    fi
+  fi
   echo "Start-local successfully removed"
 fi
