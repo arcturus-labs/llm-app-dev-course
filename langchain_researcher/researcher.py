@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from langgraph.graph import StateGraph, START, END
+import langgraph.graph
 from langchain_openai import ChatOpenAI
 from tavily import TavilyClient
 import os
@@ -200,7 +200,7 @@ def build_research_graph():
     Builds and returns the compiled research graph.
     """
     # Create the state graph
-    workflow = StateGraph(ResearchState)
+    workflow = langgraph.graph.StateGraph(ResearchState)
     
     # Add nodes
     workflow.add_node("search", search_node)
@@ -208,7 +208,7 @@ def build_research_graph():
     workflow.add_node("summarize", summarize_node)
     
     # Add edges
-    workflow.add_edge(START, "search")
+    workflow.add_edge(langgraph.graph.START, "search")
     workflow.add_edge("search", "review")
     workflow.add_conditional_edges(
         "review",
@@ -218,7 +218,7 @@ def build_research_graph():
             "summarize": "summarize"
         }
     )
-    workflow.add_edge("summarize", END)
+    workflow.add_edge("summarize", langgraph.graph.END)
     
     # Compile the graph
     return workflow.compile()
